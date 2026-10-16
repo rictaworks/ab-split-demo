@@ -28,17 +28,34 @@
 
 氏名・メールアドレスなどの個人情報は保持しません。訪問者 ID は、スニペットがブラウザ内で生成する不透明な乱数です。
 
-## 画面と経路
+## 認証
 
-| 経路 | 内容 |
+ログインはありません。管理画面は Cookie `ab_session` で、そのブラウザが作った実験だけを表示・操作します。
+
+## ページ一覧
+
+| ページ名 | URL |
 |---|---|
-| `/` | 実験一覧 |
-| `/experiments/:id` | 実験の詳細・結果 |
-| `/legal` | 法的表記（デモ版の注意・運営者・連絡先・Cookie・データ削除） |
-| `/snippet.js` | 埋め込み用スニペット |
-| `/api/experiments` ほか | 管理用 API（実験の作成・更新・状態変更・模擬・結果取得） |
-| `/t/:publicKey/assign` | 割当 API |
-| `/t/:publicKey/convert` | 転換 API |
+| 実験一覧 | [https://ab-split-demo.rictaworks.jp/](https://ab-split-demo.rictaworks.jp/) |
+| 実験の詳細・結果 | `https://ab-split-demo.rictaworks.jp/experiments/:id` |
+| 法的表記 | [https://ab-split-demo.rictaworks.jp/legal](https://ab-split-demo.rictaworks.jp/legal) |
+
+## API 一覧
+
+エンドポイントの詳細は [SPEC/api.md](SPEC/api.md) を参照してください。
+
+| タイトル | エンドポイント |
+|---|---|
+| 実験一覧 | `GET /api/experiments` |
+| 実験の作成 | `POST /api/experiments` |
+| 実験の取得 | `GET /api/experiments/:id` |
+| 実験の更新 | `PUT /api/experiments/:id` |
+| 状態の変更 | `POST /api/experiments/:id/status` |
+| 擬似トラフィック | `POST /api/experiments/:id/simulate` |
+| 結果の取得 | `GET /api/experiments/:id/results` |
+| 割当 | `GET /t/:publicKey/assign` |
+| 転換の記録 | `POST /t/:publicKey/convert` |
+| スニペット | `GET /snippet.js` |
 
 すべての画面に、アンバーバナー（デモ版の注意）、「← デモ一覧へ」、右下固定の「ご相談はこちら」を表示します。GA4 タグ（`G-C04W1XKS16`）を全画面に入れています。
 

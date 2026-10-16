@@ -99,7 +99,7 @@ export class ExperimentService {
     const aggregate = await this.getOwnedExperiment(ownerSessionId, id);
     const input = parseExperimentInput(raw);
     this.assertEditable(aggregate, input);
-    await this.repo.updateExperiment(
+    const updated = await this.repo.updateExperiment(
       aggregate.experiment,
       { name: input.name, goalName: input.goalName, minSample: input.minSample },
       aggregate.variants.map((row, index) => {
@@ -107,6 +107,10 @@ export class ExperimentService {
         return { id: row.id, key: next.key, label: next.label, weight: next.weight, payload: next.payload };
       }),
     );
+    if (!updated) {
+      trace('experiment.update_conflict', { experimentId: id, expectedStatus: aggregate.experiment.status });
+      throw new ConflictError(SERVICE_MESSAGE.CONCURRENT_UPDATE);
+    }
     trace('experiment.updated', {
       experimentId: id,
       owner: await fingerprintSecret(ownerSessionId),
@@ -303,6 +307,11 @@ export class ExperimentService {
     }
     const isDraft = aggregate.experiment.status === EXPERIMENT_STATUS.DRAFT;
     if (!isDraft) {
+      // 転換は goalName で集計するため、開始後に変えると記録済みの転換が結果から消える。
+      if (input.goalName !== aggregate.experiment.goalName) {
+        trace('experiment.goal_name_locked', { experimentId: aggregate.experiment.id, status: aggregate.experiment.status });
+        throw new ConflictError(SERVICE_MESSAGE.GOAL_NAME_LOCKED);
+      }
       const keysChanged = input.variants.some((variant, index) => variant.key !== aggregate.variants[index]!.key);
       if (keysChanged) {
         throw new ConflictError(SERVICE_MESSAGE.VARIANT_KEYS_LOCKED);

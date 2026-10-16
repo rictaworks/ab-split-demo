@@ -127,6 +127,11 @@ export const GA4 = {
   SCRIPT_URL: 'https://www.googletagmanager.com/gtag/js?id=',
 } as const;
 
+export const DEMO_LIST = {
+  /** デモ一覧の URL は環境変数 DEMO_LIST_URL から取る。許可するスキームだけをここで定める。 */
+  ALLOWED_PROTOCOLS: ['https:', 'http:'],
+} as const;
+
 export const FONT_AWESOME = {
   STYLESHEET_URL: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css',
 } as const;

@@ -64,6 +64,11 @@ describe('設定ファイルと環境変数（要件 8・9）', () => {
     expect(example).toMatch(/^GA4_MEASUREMENT_ID=\s*$/m);
   });
 
+  it('.env.example に DEMO_LIST_URL のキー名があり、値は空である（URL をコードや例に書かない）', () => {
+    const example = readFileSync(join(ROOT, '.env.example'), 'utf8');
+    expect(example).toMatch(/^DEMO_LIST_URL=\s*$/m);
+  });
+
   it('.dev.vars（ローカルの秘密情報）は .gitignore で除外されている', () => {
     const gitignore = readFileSync(join(ROOT, '.gitignore'), 'utf8');
     expect(gitignore).toMatch(/^\.dev\.vars$/m);

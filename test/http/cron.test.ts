@@ -64,3 +64,22 @@ describe('日次リセット（要件 7）', () => {
     expect(created.id).toBeTruthy();
   });
 });
+
+describe('任意 1: cron の失敗が呼び出し元に伝わる', () => {
+  it('リセットが失敗したら、scheduled は await の時点で拒否される（waitUntil に隠さない）', async () => {
+    const failure = new Error('db down');
+    const env = {
+      DB: {
+        prepare: () => {
+          throw failure;
+        },
+        batch: () => Promise.reject(failure),
+      },
+    };
+    const ctx = { waitUntil: jest.fn() };
+    await expect(scheduled({ cron: DAILY_RESET.CRON, scheduledTime: Date.now() } as never, env as never, ctx as never)).rejects.toThrow(
+      'db down',
+    );
+    expect(ctx.waitUntil).not.toHaveBeenCalled();
+  });
+});

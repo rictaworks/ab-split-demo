@@ -12,7 +12,7 @@ export const UI_TEXT = {
     className: 'demo-banner',
     message: 'デモ版です。データは毎日 JST 03:00 にすべて削除されます。本番環境ではありません。',
   },
-  backLink: { label: '← デモ一覧へ', href: '/' },
+  backLink: { label: '← デモ一覧へ' },
   consult: { label: 'ご相談はこちら', href: SITE.CONSULT_HREF, icon: 'fa-solid fa-envelope' },
   footer: {
     legalLabel: '法的表記',
@@ -39,6 +39,8 @@ export const UI_TEXT = {
     openLabel: '開く',
     createHeading: '新しい実験を作成',
     createSubmit: '作成する',
+    addVariant: 'バリアントを追加',
+    removeVariant: '削除',
   },
   experiment: {
     title: '実験の詳細',
@@ -98,6 +100,10 @@ export const UI_TEXT = {
     saved: '保存しました。',
     started: '状態を変更しました。',
     simulated: '模擬トラフィックを実行しました。',
+    simulatedSummary: '模擬トラフィックを実行しました。処理件数は {processed} 件、転換は {conversions} 件です。',
+    simulatedStopped: 'イベント上限に達したため、途中で打ち切りました。',
+    variantMin: 'バリアントは 2 件未満にできません。',
+    variantMax: 'バリアントは 4 件までです。',
     failed: '操作できませんでした。内容を確認してください。',
     copied: 'コピーしました。',
     copy: 'コピー',
@@ -115,3 +121,9 @@ export const UI_TEXT = {
     dataBody: 'デモ版のデータは毎日 JST 03:00 にすべて削除されます。',
   },
 } as const;
+
+/** 操作成功後の再読み込みをまたいでメッセージを渡す sessionStorage のキー（画面のクライアント処理で使う）。 */
+export const PENDING_FEEDBACK_STORAGE_KEY = 'ab_split_pending_feedback';
+
+/** 作成フォームのバリアント行テンプレートで、連番を差し込む位置の目印。 */
+export const VARIANT_INDEX_PLACEHOLDER = '__INDEX__';

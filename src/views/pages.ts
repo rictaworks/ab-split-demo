@@ -1,7 +1,7 @@
-import { EXPERIMENT_STATUS, EXPERIMENT_LIMITS } from '../config/domain';
+import { EXPERIMENT_STATUS, EXPERIMENT_LIMITS, INPUT_RULES } from '../config/domain';
 import { JUDGEMENT_LABEL, NOT_COMPARABLE_LABEL } from '../config/messages';
 import { ROUTE } from '../config/http';
-import { SITE, UI_TEXT } from '../config/ui';
+import { SITE, UI_TEXT, VARIANT_INDEX_PLACEHOLDER } from '../config/ui';
 import type { ResultsSummary } from '../core/results';
 import type { ExperimentDto } from '../http/dto';
 import { escapeHtml } from './html';
@@ -11,6 +11,10 @@ const MESSAGES = {
   saved: UI_TEXT.client.saved,
   started: UI_TEXT.client.started,
   simulated: UI_TEXT.client.simulated,
+  simulatedSummary: UI_TEXT.client.simulatedSummary,
+  simulatedStopped: UI_TEXT.client.simulatedStopped,
+  variantMin: UI_TEXT.client.variantMin,
+  variantMax: UI_TEXT.client.variantMax,
   failed: UI_TEXT.client.failed,
   copied: UI_TEXT.client.copied,
 };
@@ -19,6 +23,7 @@ export interface IndexView {
   readonly experiments: readonly ExperimentDto[];
   readonly limitReached: boolean;
   readonly ga4MeasurementId: string;
+  readonly demoListUrl: string;
   readonly nonce: string;
 }
 
@@ -52,6 +57,7 @@ export function renderIndexPage(view: IndexView): string {
   return renderLayout({
     title: UI_TEXT.index.title,
     ga4MeasurementId: view.ga4MeasurementId,
+    demoListUrl: view.demoListUrl,
     nonce: view.nonce,
     body,
     messages: MESSAGES,
@@ -66,6 +72,7 @@ export interface ExperimentView {
   readonly labels: Readonly<Record<string, string>>;
   readonly origin: string;
   readonly ga4MeasurementId: string;
+  readonly demoListUrl: string;
   readonly nonce: string;
 }
 
@@ -98,6 +105,7 @@ export function renderExperimentPage(view: ExperimentView): string {
   return renderLayout({
     title: experiment.name,
     ga4MeasurementId: view.ga4MeasurementId,
+    demoListUrl: view.demoListUrl,
     nonce: view.nonce,
     body,
     messages: MESSAGES,
@@ -105,7 +113,7 @@ export function renderExperimentPage(view: ExperimentView): string {
   });
 }
 
-export function renderLegalPage(ga4MeasurementId: string, nonce: string): string {
+export function renderLegalPage(ga4MeasurementId: string, demoListUrl: string, nonce: string): string {
   const body = [
     '<section class="card legal">',
     `<h1>${escapeHtml(UI_TEXT.legal.heading)}</h1>`,
@@ -117,18 +125,18 @@ export function renderLegalPage(ga4MeasurementId: string, nonce: string): string
     `<p>${escapeHtml(UI_TEXT.legal.dataBody)}</p>`,
     '</section>',
   ].join('');
-  return renderLayout({ title: UI_TEXT.legal.title, ga4MeasurementId, nonce, body });
+  return renderLayout({ title: UI_TEXT.legal.title, ga4MeasurementId, demoListUrl, nonce, body });
 }
 
-export function renderNotFoundPage(ga4MeasurementId: string, nonce: string): string {
+export function renderNotFoundPage(ga4MeasurementId: string, demoListUrl: string, nonce: string): string {
   const body = [
     '<section class="card">',
     `<h1>${escapeHtml(UI_TEXT.errors.notFoundHeading)}</h1>`,
     `<p>${escapeHtml(UI_TEXT.errors.notFoundBody)}</p>`,
-    `<p><a class="button" href="${ROUTE.INDEX}">${escapeHtml(UI_TEXT.backLink.label)}</a></p>`,
+    `<p><a class="button" href="${escapeHtml(demoListUrl)}">${escapeHtml(UI_TEXT.backLink.label)}</a></p>`,
     '</section>',
   ].join('');
-  return renderLayout({ title: UI_TEXT.errors.notFoundTitle, ga4MeasurementId, nonce, body });
+  return renderLayout({ title: UI_TEXT.errors.notFoundTitle, ga4MeasurementId, demoListUrl, nonce, body });
 }
 
 function renderStatusActions(experiment: ExperimentDto): string {
@@ -160,19 +168,24 @@ function renderExperimentForm(options: FormOptions): string {
   const api = isCreate ? 'POST /api/experiments' : `PUT /api/experiments/${experiment?.id ?? ''}`;
   const isDraft = experiment === undefined || experiment.status === EXPERIMENT_STATUS.DRAFT;
   const variantCount = isCreate ? 2 : experiment?.variants.length ?? 2;
-  const variants = Array.from({ length: variantCount }, (_unused, index) => {
+  const rows = Array.from({ length: variantCount }, (_unused, index) => {
     const existing = experiment?.variants[index];
     const defaults = index === 0 ? UI_TEXT.experiment.defaultVariants.control : UI_TEXT.experiment.defaultVariants.variant;
-    return renderVariantFields(index, {
-      key: existing?.key ?? defaults.key,
-      label: existing?.label ?? defaults.label,
-      weight: existing?.weight ?? 1,
-      selector: existing?.payload.selector ?? '',
-      text: existing?.payload.text ?? '',
-      color: existing?.payload.color ?? '',
-      keyEditable: isCreate || isDraft,
-    });
+    return renderVariantFields(
+      String(index),
+      {
+        key: existing?.key ?? defaults.key,
+        label: existing?.label ?? defaults.label,
+        weight: existing?.weight ?? 1,
+        selector: existing?.payload.selector ?? '',
+        text: existing?.payload.text ?? '',
+        color: existing?.payload.color ?? '',
+        keyEditable: isCreate || isDraft,
+      },
+      isCreate,
+    );
   }).join('');
+  const variants = isCreate ? renderVariantEditor(rows, variantCount) : rows;
   const honeypot = isCreate
     ? '<div class="honeypot" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>'
     : '';
@@ -182,7 +195,7 @@ function renderExperimentForm(options: FormOptions): string {
     `<form data-api="${escapeHtml(api)}"${redirect}>`,
     '<div class="form-grid">',
     `<label>${escapeHtml(UI_TEXT.experiment.name)}<input name="name" required maxlength="50" value="${escapeHtml(experiment?.name ?? '')}"></label>`,
-    `<label>${escapeHtml(UI_TEXT.experiment.goalName)}<input name="goalName" required maxlength="40" value="${escapeHtml(experiment?.goalName ?? 'purchase')}"></label>`,
+    `<label>${escapeHtml(UI_TEXT.experiment.goalName)}<input name="goalName" required maxlength="40" value="${escapeHtml(experiment?.goalName ?? 'purchase')}"${isDraft ? '' : ' readonly'}></label>`,
     `<label>${escapeHtml(UI_TEXT.experiment.minSample)}<input name="minSample" type="number" min="1" required value="${experiment?.minSample ?? 30}"></label>`,
     '</div>',
     `<h3>${escapeHtml(UI_TEXT.experiment.variantsHeading)}</h3>`,
@@ -203,10 +216,31 @@ interface VariantFieldValues {
   readonly keyEditable: boolean;
 }
 
-function renderVariantFields(index: number, values: VariantFieldValues): string {
+/** 作成フォームのバリアント欄。追加・削除はクライアント処理が行い、行の連番は INDEX_PLACEHOLDER から差し込む。 */
+function renderVariantEditor(rows: string, initialCount: number): string {
+  const template = renderVariantFields(VARIANT_INDEX_PLACEHOLDER, defaultVariantValues(), true);
+  return [
+    `<div data-variant-list data-min-variants="${INPUT_RULES.VARIANT_MIN_COUNT}" ` +
+      `data-max-variants="${INPUT_RULES.VARIANT_MAX_COUNT}" data-next-index="${initialCount}">${rows}</div>`,
+    `<template data-variant-template>${template}</template>`,
+    `<div class="actions"><button type="button" class="secondary" data-variant-add>` +
+      `<i class="fa-solid fa-plus" aria-hidden="true"></i> ${escapeHtml(UI_TEXT.index.addVariant)}</button></div>`,
+  ].join('');
+}
+
+function defaultVariantValues(): VariantFieldValues {
+  return { key: '', label: '', weight: 1, selector: '', text: '', color: '', keyEditable: true };
+}
+
+function renderVariantFields(index: string, values: VariantFieldValues, removable: boolean): string {
   const prefix = `v${index}`;
   const keyAttributes = values.keyEditable ? '' : ' readonly';
+  const removeButton = removable
+    ? `<div class="actions"><button type="button" class="secondary" data-variant-remove>` +
+      `<i class="fa-solid fa-trash" aria-hidden="true"></i> ${escapeHtml(UI_TEXT.index.removeVariant)}</button></div>`
+    : '';
   return [
+    '<div class="variant-row" data-variant-row>',
     '<div class="form-grid">',
     `<label>${escapeHtml(UI_TEXT.experiment.variantKey)}<input name="${prefix}.key" required maxlength="20" value="${escapeHtml(values.key)}"${keyAttributes}></label>`,
     `<label>${escapeHtml(UI_TEXT.experiment.variantLabel)}<input name="${prefix}.label" required maxlength="30" value="${escapeHtml(values.label)}"></label>`,
@@ -214,6 +248,8 @@ function renderVariantFields(index: number, values: VariantFieldValues): string 
     `<label>${escapeHtml(UI_TEXT.experiment.variantSelector)}<input name="${prefix}.selector" maxlength="200" value="${escapeHtml(values.selector)}"></label>`,
     `<label>${escapeHtml(UI_TEXT.experiment.variantText)}<input name="${prefix}.text" maxlength="200" value="${escapeHtml(values.text)}"></label>`,
     `<label>${escapeHtml(UI_TEXT.experiment.variantColor)}<input name="${prefix}.color" maxlength="7" value="${escapeHtml(values.color)}"></label>`,
+    '</div>',
+    removeButton,
     '</div>',
   ].join('');
 }

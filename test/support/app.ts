@@ -8,6 +8,7 @@ jest.spyOn(console, 'log').mockImplementation(() => undefined);
 jest.spyOn(console, 'error').mockImplementation(() => undefined);
 
 export const TEST_GA4_ID = 'G-TEST12345';
+export const TEST_DEMO_LIST_URL = 'https://demo-list.example.test/';
 export const TEST_NOW = new Date('2026-10-17T00:00:00.000Z');
 
 export interface TestApp {
@@ -31,6 +32,7 @@ export function createTestApp(overrides: Partial<AppDeps> = {}): TestApp {
   const deps: AppDeps = {
     db: adaptSqlite(raw),
     ga4MeasurementId: TEST_GA4_ID,
+    demoListUrl: TEST_DEMO_LIST_URL,
     now: () => new Date(TEST_NOW),
     randomBytes: (length: number) => {
       const bytes = new Uint8Array(length);

@@ -35,13 +35,15 @@ export const SQL = {
     'FROM experiments WHERE owner_session_id = ? ORDER BY created_at, id',
   EXPERIMENT_COUNT_BY_OWNER: 'SELECT COUNT(*) AS n FROM experiments WHERE owner_session_id = ?',
   EXPERIMENT_UPDATE_FIELDS:
-    'UPDATE experiments SET name = ?, goal_name = ?, min_sample = ? WHERE id = ? AND owner_session_id = ?',
+    'UPDATE experiments SET name = ?, goal_name = ?, min_sample = ? ' +
+    'WHERE id = ? AND owner_session_id = ? AND status = ?',
   EXPERIMENT_SET_STATUS: 'UPDATE experiments SET status = ? WHERE id = ? AND owner_session_id = ? AND status = ?',
   VARIANT_SELECT_BY_EXPERIMENT:
     'SELECT id, experiment_id, key, label, weight, payload_json, position FROM variants ' +
     'WHERE experiment_id = ? ORDER BY position',
   VARIANT_UPDATE:
-    'UPDATE variants SET key = ?, label = ?, weight = ?, payload_json = ? WHERE id = ? AND owner_session_id = ?',
+    'UPDATE variants SET key = ?, label = ?, weight = ?, payload_json = ? WHERE id = ? AND owner_session_id = ? ' +
+    'AND EXISTS (SELECT 1 FROM experiments WHERE id = variants.experiment_id AND status = ?)',
   EVENT_COUNT:
     'SELECT (SELECT COUNT(*) FROM assignments WHERE experiment_id = ?) + ' +
     '(SELECT COUNT(*) FROM conversions c JOIN assignments a ON a.id = c.assignment_id ' +

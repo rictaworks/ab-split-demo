@@ -4,7 +4,7 @@ import { SERVICE_MESSAGE } from './config/messages';
 import { ConfigurationError } from './app/errors';
 import { handleRequest } from './http/router';
 import { runDailyReset } from './services/daily-reset';
-import { trace } from './infra/trace';
+import { trace, traceError } from './infra/trace';
 
 export interface ScheduledEventLike {
   readonly cron: string;
@@ -20,6 +20,7 @@ export function buildDeps(env: WorkerEnv): AppDeps {
   return {
     db: env.DB,
     ga4MeasurementId: env.GA4_MEASUREMENT_ID ?? null,
+    demoListUrl: env.DEMO_LIST_URL ?? null,
     now: () => new Date(),
     randomBytes: (length: number) => {
       const bytes = new Uint8Array(length);
@@ -33,13 +34,19 @@ export function buildDeps(env: WorkerEnv): AppDeps {
 export async function scheduled(
   event: ScheduledEventLike,
   env: WorkerEnv,
-  ctx: ExecutionContextLike,
+  _ctx: ExecutionContextLike,
 ): Promise<void> {
   if (event.cron !== DAILY_RESET.CRON) {
     trace('cron.unexpected', { cron: event.cron });
     throw new ConfigurationError(SERVICE_MESSAGE.UNEXPECTED_CRON(event.cron));
   }
-  ctx.waitUntil(runDailyReset(env.DB));
+  try {
+    await runDailyReset(env.DB);
+  } catch (error) {
+    // 失敗を握りつぶさず、ログに残して Workers の実行結果（失敗）として伝える。
+    traceError('cron.reset_failed', error, {});
+    throw error;
+  }
 }
 
 export default {

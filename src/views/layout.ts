@@ -7,6 +7,8 @@ import { CLIENT_SCRIPT } from './client';
 export interface LayoutOptions {
   readonly title: string;
   readonly ga4MeasurementId: string;
+  /** 「← デモ一覧へ」の遷移先（環境変数 DEMO_LIST_URL を検証済みの値）。 */
+  readonly demoListUrl: string;
   /** 応答の CSP と同じ nonce。インラインの script / style に付ける。 */
   readonly nonce: string;
   readonly body: string;
@@ -42,7 +44,7 @@ export function renderLayout(options: LayoutOptions): string {
     `<body data-messages="${messages}">`,
     `<div class="${UI_TEXT.banner.className}" role="status">${escapeHtml(UI_TEXT.banner.message)}</div>`,
     '<header class="site-header">',
-    `<a class="back-link" href="${UI_TEXT.backLink.href}">${escapeHtml(UI_TEXT.backLink.label)}</a>`,
+    `<a class="back-link" href="${escapeHtml(options.demoListUrl)}">${escapeHtml(UI_TEXT.backLink.label)}</a>`,
     `<span>${escapeHtml(SITE.SERVICE_NAME)}</span>`,
     '</header>',
     `<main class="container">${options.body}</main>`,

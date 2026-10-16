@@ -23,6 +23,7 @@ h2 { font-size: 1.15rem; margin: 0 0 12px; }
 table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
 th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--color-border); vertical-align: top; }
 .form-grid { display: grid; gap: 8px 12px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.variant-row { margin-top: 12px; padding-top: 8px; border-top: 1px solid #e5e7eb; }
 label { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; color: var(--color-muted); }
 input { font: inherit; padding: 6px 8px; border: 1px solid var(--color-border); border-radius: 6px; color: var(--color-text); background: var(--color-surface); }
 button, .button { font: inherit; padding: 8px 14px; border: none; border-radius: 6px; background: var(--color-primary); color: #ffffff; cursor: pointer; text-decoration: none; display: inline-flex; gap: 6px; align-items: center; }

@@ -152,11 +152,11 @@ export class ExperimentRepository {
     experiment: ExperimentRow,
     fields: { name: string; goalName: string; minSample: number },
     variants: ReadonlyArray<{ id: string; key: string; label: string; weight: number; payload: VariantPayload }>,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const statements = [
       this.db
         .prepare(SQL.EXPERIMENT_UPDATE_FIELDS)
-        .bind(fields.name, fields.goalName, fields.minSample, experiment.id, experiment.ownerSessionId),
+        .bind(fields.name, fields.goalName, fields.minSample, experiment.id, experiment.ownerSessionId, experiment.status),
       ...variants.map((variant) =>
         this.db
           .prepare(SQL.VARIANT_UPDATE)
@@ -167,10 +167,16 @@ export class ExperimentRepository {
             JSON.stringify(variant.payload),
             variant.id,
             experiment.ownerSessionId,
+            experiment.status,
           ),
       ),
     ];
-    await this.db.batch(statements);
+    const results = await this.db.batch(statements);
+    const changed = results[0]?.meta.changes;
+    if (changed === undefined) {
+      throw new Error(REPOSITORY_MESSAGE.BATCH_RESULT_MISSING(experiment.id));
+    }
+    return changed === 1;
   }
 
   /** 状態を compare-and-set で更新する。他の要求が先に変えていれば false を返す。 */

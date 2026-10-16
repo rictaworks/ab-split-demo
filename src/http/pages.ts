@@ -1,4 +1,4 @@
-import { GA4, CACHE_POLICY, CONTENT_TYPE, HEADER, STATUS_CODE } from '../config/http';
+import { DEMO_LIST, GA4, CACHE_POLICY, CONTENT_TYPE, HEADER, STATUS_CODE } from '../config/http';
 import { SERVICE_MESSAGE } from '../config/messages';
 import { ConfigurationError, NotFoundError } from '../app/errors';
 import type { AppDeps } from '../app/deps';
@@ -19,6 +19,24 @@ export function requireGa4MeasurementId(deps: AppDeps): string {
   return id;
 }
 
+/** デモ一覧の URL を検証して返す。未設定・不正（http/https 以外、相対 URL、解析不能）なら明示的に失敗する。 */
+export function requireDemoListUrl(deps: AppDeps): string {
+  const value = deps.demoListUrl;
+  if (value === null || value.trim() === '') {
+    throw new ConfigurationError(SERVICE_MESSAGE.CONFIGURATION_ERROR('DEMO_LIST_URL'));
+  }
+  let parsed: URL;
+  try {
+    parsed = new URL(value);
+  } catch {
+    throw new ConfigurationError(SERVICE_MESSAGE.CONFIGURATION_ERROR('DEMO_LIST_URL'));
+  }
+  if (!(DEMO_LIST.ALLOWED_PROTOCOLS as readonly string[]).includes(parsed.protocol)) {
+    throw new ConfigurationError(SERVICE_MESSAGE.CONFIGURATION_ERROR('DEMO_LIST_URL'));
+  }
+  return parsed.href;
+}
+
 export async function renderIndex(
   service: ExperimentService,
   deps: AppDeps,
@@ -26,6 +44,7 @@ export async function renderIndex(
   setCookie: string | null,
 ): Promise<Response> {
   const ga4MeasurementId = requireGa4MeasurementId(deps);
+  const demoListUrl = requireDemoListUrl(deps);
   const nonce = newCspNonce(deps.randomBytes);
   const aggregates = await service.listExperiments(ownerSessionId);
   const experiments = aggregates.map(toExperimentDto);
@@ -33,6 +52,7 @@ export async function renderIndex(
     experiments,
     limitReached: aggregates.length >= EXPERIMENT_LIMITS.MAX_EXPERIMENTS_PER_SESSION,
     ga4MeasurementId,
+    demoListUrl,
     nonce,
   });
   return pageResponse(STATUS_CODE.OK, html, nonce, setCookie);
@@ -47,13 +67,14 @@ export async function renderExperiment(
   setCookie: string | null,
 ): Promise<Response> {
   const ga4MeasurementId = requireGa4MeasurementId(deps);
+  const demoListUrl = requireDemoListUrl(deps);
   const nonce = newCspNonce(deps.randomBytes);
   let aggregate;
   try {
     aggregate = await service.getOwnedExperiment(ownerSessionId, experimentId);
   } catch (error) {
     if (error instanceof NotFoundError) {
-      return pageResponse(STATUS_CODE.NOT_FOUND, renderNotFoundPage(ga4MeasurementId, nonce), nonce, setCookie);
+      return pageResponse(STATUS_CODE.NOT_FOUND, renderNotFoundPage(ga4MeasurementId, demoListUrl, nonce), nonce, setCookie);
     }
     throw error;
   }
@@ -65,6 +86,7 @@ export async function renderExperiment(
     labels,
     origin: url.origin,
     ga4MeasurementId,
+    demoListUrl,
     nonce,
   });
   return pageResponse(STATUS_CODE.OK, html, nonce, setCookie);
@@ -72,14 +94,16 @@ export async function renderExperiment(
 
 export function renderLegal(deps: AppDeps): Response {
   const ga4MeasurementId = requireGa4MeasurementId(deps);
+  const demoListUrl = requireDemoListUrl(deps);
   const nonce = newCspNonce(deps.randomBytes);
-  return pageResponse(STATUS_CODE.OK, renderLegalPage(ga4MeasurementId, nonce), nonce, null);
+  return pageResponse(STATUS_CODE.OK, renderLegalPage(ga4MeasurementId, demoListUrl, nonce), nonce, null);
 }
 
 export function renderNotFound(deps: AppDeps): Response {
   const ga4MeasurementId = requireGa4MeasurementId(deps);
+  const demoListUrl = requireDemoListUrl(deps);
   const nonce = newCspNonce(deps.randomBytes);
-  return pageResponse(STATUS_CODE.NOT_FOUND, renderNotFoundPage(ga4MeasurementId, nonce), nonce, null);
+  return pageResponse(STATUS_CODE.NOT_FOUND, renderNotFoundPage(ga4MeasurementId, demoListUrl, nonce), nonce, null);
 }
 
 export function serveSnippet(): Response {

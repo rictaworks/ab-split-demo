@@ -1,4 +1,4 @@
-import { createTestApp, TestApp, TEST_GA4_ID } from '../support/app';
+import { createTestApp, TestApp, TEST_DEMO_LIST_URL, TEST_GA4_ID } from '../support/app';
 import { createExperiment, newSession, OwnerSession } from '../support/fixtures';
 import { UI_TEXT } from '../../src/config/ui';
 
@@ -6,7 +6,7 @@ import { UI_TEXT } from '../../src/config/ui';
 function expectRequiredElements(html: string): void {
   expect(html).toContain(`class="${UI_TEXT.banner.className}"`);
   expect(html).toContain(UI_TEXT.banner.message);
-  expect(html).toContain(`href="/">${UI_TEXT.backLink.label}`);
+  expect(html).toContain(`href="${TEST_DEMO_LIST_URL}">${UI_TEXT.backLink.label}`);
   expect(html).toContain(`href="${UI_TEXT.consult.href}"`);
   expect(html).toContain(UI_TEXT.consult.label);
   expect(html).toContain('href="/legal"');

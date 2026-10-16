@@ -123,6 +123,7 @@ export const SERVICE_MESSAGE = {
     `1 セッションで作成できる実験は ${limit} 件までです。既存の実験を確認してください。`,
   EXPERIMENT_NOT_FOUND: '実験が見つかりません。',
   VARIANT_COUNT_FIXED: 'バリアントの件数は作成後に変更できません。',
+  GOAL_NAME_LOCKED: '下書き以外の実験では、ゴール名を変更できません。',
   VARIANT_KEYS_LOCKED: '実行開始後はバリアントのキーを変更できません。',
   ZERO_WEIGHT_WHILE_ACTIVE: '実行中・停止中の実験では、配分率の合計を 1 以上にしてください。',
   NOT_RUNNING_FOR_SIMULATION: '模擬トラフィックは実行中の実験のみ実行できます。',

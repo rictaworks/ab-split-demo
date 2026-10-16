@@ -39,6 +39,8 @@
 | 実験一覧 | [https://ab-split-demo.rictaworks.jp/](https://ab-split-demo.rictaworks.jp/) |
 | 実験の詳細・結果 | `https://ab-split-demo.rictaworks.jp/experiments/:id` |
 | 法的表記 | [https://ab-split-demo.rictaworks.jp/legal](https://ab-split-demo.rictaworks.jp/legal) |
+| 概要（LP） | [https://ab-split-demo.rictaworks.jp/lp](https://ab-split-demo.rictaworks.jp/lp) |
+| マニュアル | [https://ab-split-demo.rictaworks.jp/manual](https://ab-split-demo.rictaworks.jp/manual) |
 
 ## API 一覧
 

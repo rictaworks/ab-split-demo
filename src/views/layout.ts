@@ -45,7 +45,7 @@ export function renderLayout(options: LayoutOptions): string {
     `<div class="${UI_TEXT.banner.className}" role="status">${escapeHtml(UI_TEXT.banner.message)}</div>`,
     '<header class="site-header">',
     `<a class="back-link" href="${escapeHtml(options.demoListUrl)}">${escapeHtml(UI_TEXT.backLink.label)}</a>`,
-    `<span>${escapeHtml(SITE.SERVICE_NAME)}</span>`,
+    `<a class="site-name" href="${ROUTE.INDEX}">${escapeHtml(SITE.SERVICE_NAME)}</a>`,
     '</header>',
     `<main class="container">${options.body}</main>`,
     '<footer class="site-footer">',

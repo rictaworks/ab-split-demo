@@ -1,12 +1,13 @@
 import { createTestApp, TestApp, TEST_DEMO_LIST_URL, TEST_GA4_ID } from '../support/app';
 import { createExperiment, newSession, OwnerSession } from '../support/fixtures';
-import { UI_TEXT } from '../../src/config/ui';
+import { SITE, UI_TEXT } from '../../src/config/ui';
 
 /** 全画面の必須 4 要素（要件 8・CLAUDE.md 全デモ共通要件）と GA4 の有無を機械的に検査する。 */
 function expectRequiredElements(html: string): void {
   expect(html).toContain(`class="${UI_TEXT.banner.className}"`);
   expect(html).toContain(UI_TEXT.banner.message);
   expect(html).toContain(`href="${TEST_DEMO_LIST_URL}">${UI_TEXT.backLink.label}`);
+  expect(html).toContain(`<a class="site-name" href="/">${SITE.SERVICE_NAME}</a>`);
   expect(html).toContain(`href="${UI_TEXT.consult.href}"`);
   expect(html).toContain(UI_TEXT.consult.label);
   expect(html).toContain('href="/legal"');

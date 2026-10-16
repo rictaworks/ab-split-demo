@@ -77,3 +77,7 @@ Thumbs.db
 # --- テスト・カバレッジ ---
 coverage/
 .rspec_status
+
+# --- ローカル開発用の秘密情報（wrangler dev が読む。コミットしない） ---
+.dev.vars
+.wrangler/

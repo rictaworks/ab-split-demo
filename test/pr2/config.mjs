@@ -1,0 +1,128 @@
+/**
+ * PR #2 のユーザーテスト用の設定と文字列の正。開発サーバー専用。
+ * 文字列リテラル（画面文言・経路・判定文言）はこのファイルに置き、run.mjs は処理だけを書く。
+ */
+
+export const CONFIG = {
+  /** 接続先の既定値。環境変数 BASE_URL で上書きする（開発サーバーのみ）。 */
+  DEFAULT_BASE_URL: 'http://localhost:8787',
+  /** 対象にしてよいホスト名。本番ドメインは含めない。 */
+  ALLOWED_HOSTS: ['localhost', '127.0.0.1', '[::1]'],
+  /** 戻るリンクの遷移先を指す環境変数名。サーバー側の DEMO_LIST_URL と同じ値を指定する（既定値は持たない）。 */
+  DEMO_LIST_URL_ENV: 'DEMO_LIST_URL',
+  SESSION_COOKIE_NAME: 'ab_session',
+  SESSION_ID_PATTERN: '^[0-9a-f]{32}$',
+  PUBLIC_KEY_PATTERN: '^[0-9a-f]{32}$',
+  ROUTES: {
+    INDEX: '/',
+    LEGAL: '/legal',
+    EXPERIMENTS_API: '/api/experiments',
+    EXPERIMENT_PAGE: '/experiments/',
+    EXPERIMENT_API: '/api/experiments/',
+    STATUS_SUFFIX: '/status',
+    SIMULATE_SUFFIX: '/simulate',
+    RESULTS_SUFFIX: '/results',
+    ASSIGN_PREFIX: '/t/',
+    ASSIGN_SUFFIX: '/assign',
+    CONVERT_SUFFIX: '/convert',
+    UNKNOWN_PAGE: '/pr2-no-such-page',
+  },
+  EXPERIMENT: {
+    NAME_PREFIX: 'PR2 ユーザーテスト',
+    GOAL_NAME: 'purchase',
+    MIN_SAMPLE: 30,
+    SELECTOR: '#buy-button',
+    CONTROL: { key: 'control', label: '対照', weight: 50, text: '今すぐ購入' },
+    VARIANT_B: { key: 'variant-b', label: '案B', weight: 50, text: '今すぐ申し込む', color: '#1E90FF' },
+    VARIANT_C: { key: 'variant-c', label: '案C', text: '無料で試す', color: '#FF8C00' },
+    /** 作成時に指定する 3 件の配分（合計 100）。 */
+    CREATE_WEIGHTS: { control: 34, 'variant-b': 33, 'variant-c': 33 },
+    /** 作成後に件数を変える PUT に使う件数（作成時より少ない）。 */
+    RESIZE_VARIANT_COUNT: 2,
+    RESIZE_WEIGHTS: { control: 50, 'variant-b': 50 },
+    STATUS_RUNNING: 'running',
+    STATUS_DRAFT: 'draft',
+  },
+  VISITOR: {
+    ASSIGN_ID: 'pr2-visitor-001',
+    OTHER_ID: 'pr2-visitor-002',
+  },
+  SIMULATE: {
+    VISITOR_COUNT: 100,
+    /** 想定転換率。キーはバリアント ID（作成応答の id）に置き換える。 */
+    RATES_BY_KEY: { control: 0.1, 'variant-b': 0.2, 'variant-c': 0.3 },
+  },
+  REQUEST_TIMEOUT_MS: 10000,
+  /** 1 を指定すると、各 HTTP 呼び出しの経路と応答コードを表示する（デバッグ用）。 */
+  TRACE_ENV: 'PR2_TRACE',
+  PAGE_NAME: {
+    INDEX: '実験一覧',
+    LEGAL: '法的表記',
+    EXPERIMENT: '実験の詳細',
+    NOT_FOUND: '404 ページ',
+  },
+  /** 必須 4 要素と GA4 の検査条件（HTML の文字列で確認する）。 */
+  REQUIRED: {
+    BANNER_CLASS: 'demo-banner',
+    BANNER_TEXT: 'デモ版です。データは毎日 JST 03:00 にすべて削除されます。本番環境ではありません。',
+    BACK_LINK_TEXT: '← デモ一覧へ',
+    CONSULT_TEXT: 'ご相談はこちら',
+    CONSULT_HREF: 'href="mailto:info@rictaworks.jp"',
+    CONSULT_CLASS: 'consult-button',
+    CONSULT_FIXED_PATTERN: '\\.consult-button\\s*\\{[^}]*position:\\s*fixed',
+    LEGAL_HREF: 'href="/legal"',
+    GA4_SCRIPT_PATTERN: 'googletagmanager\\.com/gtag/js\\?id=G-[A-Z0-9]+',
+    GA4_CONFIG_PATTERN: "gtag\\('config', 'G-[A-Z0-9]+'\\)",
+  },
+  MESSAGE: {
+    HEADER: 'PR #2 ユーザーテスト（開発サーバー）',
+    TARGET: '接続先',
+    PASS: '合格',
+    FAIL: '不合格',
+    SKIP: '未実行（前の手順が不合格のため）',
+    SKIP_SHORT: '未実行',
+    SUMMARY: '合計',
+    PREFIX_SUMMARY: '結果',
+    DEMO_LIST_URL_MISSING:
+      '環境変数 DEMO_LIST_URL が未設定です。サーバー側と同じ値を指定してください（戻るリンクの遷移先の検査に使います）。',
+    REFUSED_HOST: '接続先のホストが許可されていません。開発サーバー（localhost など）を指定してください。',
+    INVALID_BASE_URL: '接続先の URL の書式が不正です。',
+    NO_SESSION_COOKIE: 'セッション Cookie が返されませんでした。',
+    CHECK_LABEL: {
+      PAGE_STATUS: 'HTTP 応答が 200 である',
+      NOT_FOUND_STATUS: 'HTTP 応答が 404 である',
+      ELEMENT_BANNER: 'アンバーバナーがある',
+      ELEMENT_BACK_LINK: '「← デモ一覧へ」の戻るリンクがある',
+      ELEMENT_CONSULT: '「ご相談はこちら」ボタンがある',
+      ELEMENT_CONSULT_FIXED: '相談ボタンが右下に固定されている',
+      ELEMENT_LEGAL: '/legal へのリンクがある',
+      GA4_SCRIPT: 'GA4 のスクリプトタグがある',
+      GA4_CONFIG: 'GA4 の config 呼び出しがある',
+      CREATE_STATUS: '作成が 201 で応答する',
+      CREATE_DRAFT: '作成直後の状態が下書きである',
+      CREATE_PUBLIC_KEY: '公開キーが 32 桁の 16 進数である',
+      CREATE_VARIANTS: '作成時に指定したバリアントが 3 件である',
+      VARIANT_COUNT_FIXED: '作成後にバリアントの件数を変える更新（PUT）は 409 で拒否される（VARIANT_COUNT_FIXED）',
+      VARIANT_COUNT_UNCHANGED: '拒否後もバリアントは 3 件のままである',
+      START_STATUS: '開始（状態を running へ）が 200 で応答する',
+      START_RUNNING: '開始後の状態が実行中である',
+      ASSIGN_STATUS: '割当 API が 200 で応答する',
+      ASSIGN_NO_STORE: '割当 API の応答が no-store である',
+      ASSIGN_VARIANT: '割当で対象のバリアントが返る',
+      ASSIGN_GOAL: '割当応答にゴール名が含まれる',
+      ASSIGN_STICKY: '同じ訪問者の再割当は同じバリアントになる',
+      CONVERT_STATUS: '転換 API が 200 で応答する',
+      CONVERT_RECORDED: '割当済みの訪問者の転換が記録される',
+      RESULTS_STATUS: '結果 API が 200 で応答する',
+      RESULTS_COUNT: '結果がバリアント 3 件分ある',
+      RESULTS_COMPARABLE: '結果が比較可能である',
+      RESULTS_EXPOSURE: '結果に露出数が 1 件以上ある',
+      SIMULATE_STATUS: '模擬トラフィック API が 200 で応答する',
+      SIMULATE_PROCESSED: '模擬トラフィックが指定の訪問者数を処理する',
+      SIMULATE_RESULTS_GREW: '模擬トラフィック後に露出数が増えている',
+      NO_COOKIE_DENIED: 'Cookie が無い閲覧者には他人の実験が見えない（404）',
+      INVALID_JSON_STATUS: '不正な JSON は 400 で拒否される',
+      UNKNOWN_KEY_ASSIGN: '存在しない公開キーの割当は variant が null になる',
+    },
+  },
+};

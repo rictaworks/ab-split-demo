@@ -98,7 +98,11 @@ PR に投稿するときは、フッターにモデル名を記載すること�
 - GA4 タグを全画面に入れる。
 - 実装完了・本番デプロイ・ユーザーテストの各段階で、上記の有無を機械的に確認する。
 
-## 未実装（コードは未作成）
+## ビルド・テストのコマンド
 
-- ビルド・テストのコマンドは、実装の Issue で決めて、ここに書き加える。
+- テスト: `npm test`（Jest。core・HTTP 統合・規約検査）
+- 型検査: `npm run typecheck`
+- ローカル実行: `npm run dev`（`wrangler dev`。`GA4_MEASUREMENT_ID` は `.dev.vars` に置く）
+- D1 マイグレーション: `npm run db:migrate:local` / `npm run db:migrate:remote`
+- デプロイ: `npm run deploy`（`wrangler.toml` の `database_id` を実値に置き換えてから）
 - README と SPEC に未実装の機能を書かない。

@@ -1,0 +1,18 @@
+# ab-split-demo（デモ版）: Cloudflare Workers + D1 の構成。
+# 秘密情報はここに書かない。GA4_MEASUREMENT_ID は本番では `wrangler secret put`、
+# ローカルでは .dev.vars（コミットしない）で渡す。キー名は .env.example を正とする。
+
+name = "ab-split-demo"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ab-split-demo"
+# 作成後の ID に置き換える（`wrangler d1 create ab-split-demo` の出力）。
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+migrations_dir = "migrations"
+
+[triggers]
+# 日次リセット: UTC 18:00 = JST 03:00。
+crons = ["0 18 * * *"]

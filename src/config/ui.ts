@@ -1,0 +1,129 @@
+/** 画面文言の正。Japanese の文字列は src/config 以外に書かない（ハードコード検査で確認）。 */
+
+export const SITE = {
+  SERVICE_NAME: 'A/B テスト展示デモ',
+  OPERATOR_NAME: 'Ricta Works',
+  CONTACT_EMAIL: 'info@rictaworks.jp',
+  CONSULT_HREF: 'mailto:info@rictaworks.jp',
+} as const;
+
+export const UI_TEXT = {
+  banner: {
+    className: 'demo-banner',
+    message: 'デモ版です。データは毎日 JST 03:00 にすべて削除されます。本番環境ではありません。',
+  },
+  backLink: { label: '← デモ一覧へ' },
+  consult: { label: 'ご相談はこちら', href: SITE.CONSULT_HREF, icon: 'fa-solid fa-envelope' },
+  footer: {
+    legalLabel: '法的表記',
+    legalHref: '/legal',
+  },
+  errors: {
+    notFoundTitle: 'ページが見つかりません',
+    notFoundBody: 'お探しのページは存在しないか、表示する権限がありません。',
+    notFoundHeading: '404 ページが見つかりません',
+  },
+  index: {
+    title: '実験一覧',
+    description: 'A/B テストの実験を作成し、割当・転換・結果判定までを試せます。',
+    empty: 'この画面から作成した実験がまだありません。',
+    limitNotice: '1 セッションあたりの実験数は 5 件までです。',
+    limitReached: '実験数の上限（5 件）に達しています。既存の実験を確認してください。',
+    columns: {
+      name: '実験名',
+      status: '状態',
+      variants: 'バリアント数',
+      events: 'イベント数',
+      action: '操作',
+    },
+    openLabel: '開く',
+    createHeading: '新しい実験を作成',
+    createSubmit: '作成する',
+    addVariant: 'バリアントを追加',
+    removeVariant: '削除',
+  },
+  experiment: {
+    title: '実験の詳細',
+    basicHeading: '基本情報',
+    editHeading: '編集',
+    editSubmit: '保存する',
+    statusHeading: '状態の変更',
+    statusStart: '開始する',
+    statusPause: '停止する',
+    statusResume: '再開する',
+    resultsHeading: '結果',
+    resultsEmpty: 'まだ結果がありません。',
+    resultsNotComparable: 'バリアントが 1 件のため比較できません。',
+    snippetHeading: '埋め込みスニペット',
+    snippetGoalSelectorExample: '#buy-button',
+    defaultVariants: {
+      control: { key: 'control', label: '対照' },
+      variant: { key: 'variant-b', label: '案B' },
+    },
+    snippetDescription:
+      '次のタグを貼り付けると、割当に従って指定要素の文言・色が差し替わります。ゴール要素（goal-selector）をクリックすると転換を記録します。',
+    simulateHeading: '模擬トラフィック',
+    simulateDescription: '擬似訪問者を生成し、想定転換率に従って割当と転換を記録します。実行中の実験のみ対象です。',
+    simulateVisitors: '訪問者数（1〜1000）',
+    simulateRate: '想定転換率（0〜1）',
+    simulateSubmit: '実行する',
+    backToList: '一覧へ戻る',
+    variantKey: 'キー',
+    variantLabel: 'バリアント名',
+    variantWeight: '配分率',
+    variantSelector: '対象要素のセレクタ',
+    variantText: '表示する文言',
+    variantColor: '表示する背景色（#RRGGBB）',
+    name: '実験名',
+    goalName: 'ゴール名',
+    minSample: '最小サンプル数',
+    goalSelector: 'ゴール要素のセレクタ（例: #buy-button）',
+    variantsHeading: 'バリアント',
+    resultColumns: {
+      variant: 'バリアント',
+      exposures: '露出数',
+      conversions: '転換数',
+      rate: '転換率',
+      lift: 'リフト',
+      pValue: 'p 値',
+      judgement: '判定',
+    },
+    limitReached: 'イベント上限（10,000 件）に達したため、新規訪問者は対照に固定され、記録は停止しています。',
+    statusNames: {
+      draft: '下書き',
+      running: '実行中',
+      paused: '停止中',
+      capped: '上限到達',
+    },
+  },
+  client: {
+    saved: '保存しました。',
+    started: '状態を変更しました。',
+    simulated: '模擬トラフィックを実行しました。',
+    simulatedSummary: '模擬トラフィックを実行しました。処理件数は {processed} 件、転換は {conversions} 件です。',
+    simulatedStopped: 'イベント上限に達したため、途中で打ち切りました。',
+    variantMin: 'バリアントは 2 件未満にできません。',
+    variantMax: 'バリアントは 4 件までです。',
+    failed: '操作できませんでした。内容を確認してください。',
+    copied: 'コピーしました。',
+    copy: 'コピー',
+  },
+  legal: {
+    title: '法的表記',
+    heading: '法的表記',
+    lead: 'このサイトは A/B テストの展示用デモです。正式な法的文書ではありません。',
+    operatorLabel: '運営者',
+    contactLabel: '連絡先',
+    privacyHeading: '個人情報と Cookie について',
+    privacyBody:
+      'デモ版はセッション Cookie（ab_session）のみを使用し、氏名・メールアドレスなどの個人情報は保持しません。' +
+      '計測用の訪問者 ID は、埋め込み先のブラウザ内で生成する乱数です。',
+    dataBody: 'デモ版のデータは毎日 JST 03:00 にすべて削除されます。',
+  },
+} as const;
+
+/** 操作成功後の再読み込みをまたいでメッセージを渡す sessionStorage のキー（画面のクライアント処理で使う）。 */
+export const PENDING_FEEDBACK_STORAGE_KEY = 'ab_split_pending_feedback';
+
+/** 作成フォームのバリアント行テンプレートで、連番を差し込む位置の目印。 */
+export const VARIANT_INDEX_PLACEHOLDER = '__INDEX__';

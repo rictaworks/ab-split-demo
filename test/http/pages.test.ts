@@ -10,6 +10,8 @@ function expectRequiredElements(html: string): void {
   expect(html).toContain(`href="${UI_TEXT.consult.href}"`);
   expect(html).toContain(UI_TEXT.consult.label);
   expect(html).toContain('href="/legal"');
+  expect(html).toContain('href="/lp"');
+  expect(html).toContain('href="/manual"');
   expect(html).toContain(`https://www.googletagmanager.com/gtag/js?id=${TEST_GA4_ID}`);
   expect(html).toContain(`gtag('config', '${TEST_GA4_ID}')`);
 }
@@ -66,6 +68,27 @@ describe('画面（要件 8）', () => {
     const html = await response.text();
     expectRequiredElements(html);
     expect(html).toContain(UI_TEXT.legal.heading);
+  });
+
+  it('/lp は概要を返し、必須要素を含む', async () => {
+    const response = await app.send({ path: '/lp' });
+    expect(response.status).toBe(200);
+    const html = await response.text();
+    expectRequiredElements(html);
+    expectNoForbiddenUi(html);
+    expect(html).toContain(UI_TEXT.lp.heading);
+    expect(html).toContain('href="/manual"');
+  });
+
+  it('/manual は操作手順を番号付きで返し、必須要素を含む', async () => {
+    const response = await app.send({ path: '/manual' });
+    expect(response.status).toBe(200);
+    const html = await response.text();
+    expectRequiredElements(html);
+    expectNoForbiddenUi(html);
+    expect(html).toContain(UI_TEXT.manual.heading);
+    expect(html).toContain('<ol class="steps">');
+    expect(html.match(/<li class="step">/g)?.length).toBe(UI_TEXT.manual.steps.length);
   });
 
   it('存在しないパスは 404 の画面を返す', async () => {

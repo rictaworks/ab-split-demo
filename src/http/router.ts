@@ -4,7 +4,7 @@ import type { AppDeps } from '../app/deps';
 import { ExperimentService } from '../services/experiment-service';
 import * as admin from './admin-api';
 import { CORS_HEADERS, assignVariant, preflight, recordConversion } from './tracking-api';
-import { renderExperiment, renderIndex, renderLegal, renderNotFound, serveSnippet } from './pages';
+import { renderExperiment, renderIndex, renderLegal, renderLp, renderManual, renderNotFound, serveSnippet } from './pages';
 import { resolveSession } from './session';
 import { errorJson, toErrorResponse, withSecurityHeaders } from './responses';
 import { trace } from '../infra/trace';
@@ -106,6 +106,8 @@ const ROUTES: readonly Route[] = [
     },
   },
   { pattern: ROUTE.LEGAL, methods: { GET: (_request, _url, _params, deps) => Promise.resolve(renderLegal(deps)) } },
+  { pattern: ROUTE.LP, methods: { GET: (_request, _url, _params, deps) => Promise.resolve(renderLp(deps)) } },
+  { pattern: ROUTE.MANUAL, methods: { GET: (_request, _url, _params, deps) => Promise.resolve(renderManual(deps)) } },
   { pattern: ROUTE.SNIPPET, methods: { GET: () => Promise.resolve(serveSnippet()) } },
 ];
 

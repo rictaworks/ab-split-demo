@@ -12,6 +12,8 @@ export const ROUTE = {
   INDEX: '/',
   EXPERIMENT_PAGE: '/experiments/:id',
   LEGAL: '/legal',
+  LP: '/lp',
+  MANUAL: '/manual',
 } as const;
 
 export const QUERY = {

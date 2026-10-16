@@ -49,6 +49,8 @@ export function renderLayout(options: LayoutOptions): string {
     '</header>',
     `<main class="container">${options.body}</main>`,
     '<footer class="site-footer">',
+    `<a href="${ROUTE.LP}">${escapeHtml(UI_TEXT.footer.lpLabel)}</a>`,
+    `<a href="${ROUTE.MANUAL}">${escapeHtml(UI_TEXT.footer.manualLabel)}</a>`,
     `<a href="${ROUTE.LEGAL}">${escapeHtml(UI_TEXT.footer.legalLabel)}</a>`,
     '</footer>',
     `<a class="consult-button" href="${UI_TEXT.consult.href}"><i class="${UI_TEXT.consult.icon}" aria-hidden="true"></i> ${escapeHtml(UI_TEXT.consult.label)}</a>`,

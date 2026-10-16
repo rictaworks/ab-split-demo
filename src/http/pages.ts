@@ -4,7 +4,14 @@ import { ConfigurationError, NotFoundError } from '../app/errors';
 import type { AppDeps } from '../app/deps';
 import { EXPERIMENT_LIMITS } from '../config/domain';
 import { ExperimentService } from '../services/experiment-service';
-import { renderExperimentPage, renderIndexPage, renderLegalPage, renderNotFoundPage } from '../views/pages';
+import {
+  renderExperimentPage,
+  renderIndexPage,
+  renderLegalPage,
+  renderLpPage,
+  renderManualPage,
+  renderNotFoundPage,
+} from '../views/pages';
 import { htmlResponse } from './responses';
 import { buildContentSecurityPolicy, newCspNonce } from './csp';
 import { toExperimentDto } from './dto';
@@ -97,6 +104,20 @@ export function renderLegal(deps: AppDeps): Response {
   const demoListUrl = requireDemoListUrl(deps);
   const nonce = newCspNonce(deps.randomBytes);
   return pageResponse(STATUS_CODE.OK, renderLegalPage(ga4MeasurementId, demoListUrl, nonce), nonce, null);
+}
+
+export function renderLp(deps: AppDeps): Response {
+  const ga4MeasurementId = requireGa4MeasurementId(deps);
+  const demoListUrl = requireDemoListUrl(deps);
+  const nonce = newCspNonce(deps.randomBytes);
+  return pageResponse(STATUS_CODE.OK, renderLpPage(ga4MeasurementId, demoListUrl, nonce), nonce, null);
+}
+
+export function renderManual(deps: AppDeps): Response {
+  const ga4MeasurementId = requireGa4MeasurementId(deps);
+  const demoListUrl = requireDemoListUrl(deps);
+  const nonce = newCspNonce(deps.randomBytes);
+  return pageResponse(STATUS_CODE.OK, renderManualPage(ga4MeasurementId, demoListUrl, nonce), nonce, null);
 }
 
 export function renderNotFound(deps: AppDeps): Response {

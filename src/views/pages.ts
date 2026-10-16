@@ -128,6 +128,41 @@ export function renderLegalPage(ga4MeasurementId: string, demoListUrl: string, n
   return renderLayout({ title: UI_TEXT.legal.title, ga4MeasurementId, demoListUrl, nonce, body });
 }
 
+function renderList(items: readonly string[], listClass: string, itemClass: string): string {
+  const entries = items.map((item) => `<li class="${itemClass}">${escapeHtml(item)}</li>`).join('');
+  return `<ol class="${listClass}">${entries}</ol>`;
+}
+
+export function renderLpPage(ga4MeasurementId: string, demoListUrl: string, nonce: string): string {
+  const body = [
+    '<section class="card lp">',
+    `<h1>${escapeHtml(UI_TEXT.lp.heading)}</h1>`,
+    `<p>${escapeHtml(UI_TEXT.lp.lead)}</p>`,
+    `<h2>${escapeHtml(UI_TEXT.lp.featuresHeading)}</h2>`,
+    `<ul>${UI_TEXT.lp.features.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`,
+    `<h2>${escapeHtml(UI_TEXT.lp.limitsHeading)}</h2>`,
+    `<ul>${UI_TEXT.lp.limits.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`,
+    `<h2>${escapeHtml(UI_TEXT.lp.privacyHeading)}</h2>`,
+    `<p>${escapeHtml(UI_TEXT.lp.privacyBody)}</p>`,
+    `<p><a href="${ROUTE.MANUAL}">${escapeHtml(UI_TEXT.lp.manualLinkLabel)}</a></p>`,
+    '</section>',
+  ].join('');
+  return renderLayout({ title: UI_TEXT.lp.title, ga4MeasurementId, demoListUrl, nonce, body });
+}
+
+export function renderManualPage(ga4MeasurementId: string, demoListUrl: string, nonce: string): string {
+  const body = [
+    '<section class="card manual">',
+    `<h1>${escapeHtml(UI_TEXT.manual.heading)}</h1>`,
+    `<p>${escapeHtml(UI_TEXT.manual.lead)}</p>`,
+    renderList(UI_TEXT.manual.steps, 'steps', 'step'),
+    `<h2>${escapeHtml(UI_TEXT.manual.noteHeading)}</h2>`,
+    `<p>${escapeHtml(UI_TEXT.manual.note)}</p>`,
+    '</section>',
+  ].join('');
+  return renderLayout({ title: UI_TEXT.manual.title, ga4MeasurementId, demoListUrl, nonce, body });
+}
+
 export function renderNotFoundPage(ga4MeasurementId: string, demoListUrl: string, nonce: string): string {
   const body = [
     '<section class="card">',

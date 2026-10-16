@@ -10,8 +10,13 @@ compatibility_date = "2025-01-01"
 binding = "DB"
 database_name = "ab-split-demo"
 # 作成後の ID に置き換える（`wrangler d1 create ab-split-demo` の出力）。
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "323190aa-c313-4fd3-88b8-df2b7b74de4c"
 migrations_dir = "migrations"
+
+# フロント URL は `<name>.rictaworks.jp`（ワークスペースの規約）。custom_domain で DNS も自動作成する。
+[[routes]]
+pattern = "ab-split-demo.rictaworks.jp"
+custom_domain = true
 
 [triggers]
 # 日次リセット: UTC 18:00 = JST 03:00。
